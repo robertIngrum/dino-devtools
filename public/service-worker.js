@@ -6,6 +6,7 @@ self.addEventListener('install', event => {
         '/assets/css/main.css',
         '/js/jquery-3.2.1.js',
         '/assets/img/logo.png',
+        '/assets/img/star.png',
         '/bundle.js',
       ])
     })
