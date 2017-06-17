@@ -50,15 +50,15 @@ const updateConnectionStatus = (status) => {
 // Add edit handler
 $('#latest-headlines').on('keydown', '.byline', function(event) {
   const $articleElem = $(this).parent();
-  const id = $articleElem.data('id');
+  const id = $articleElem.data('article-id');
 
   if (event.keyCode === 13) {
     $(this).blur();
     $.ajax({
-      method: 'PUT',
+      method: 'PATCH',
       dataType: 'json',
       url: `/api/v1/articles/${id}`,
-      data: $(this).text(),
+      data: { byline: $(this).text() },
       success: function() {
         showNotification({
           message: 'Byline Updated Successfully'
@@ -76,16 +76,19 @@ $('#latest-headlines').on('keydown', '.byline', function(event) {
 });
 
 const highlightHeadline = (color, tag) => {
-  $(`#latest-headlines li.${tagName}`).css('background-color', color);
+  $('#latest-headlines li').css('display', 'none')
+  $(`#latest-headlines li.${tag}`).css({'background-color': color, display: 'block'});
 }
 
-$('#filterHeadlines li').click(function(event) {
-  let tagName = $(this).data('tagName');
-  let color = $(this).css('background-color');
-  highlightHeadline(tagName);
+$('#highlightHeadlines li').click(function(event) {
+  let tagName = $(this).data('tag');
+  let color = $(this).css('background-color', 'none');
+  highlightHeadline(color, tagName);
 });
 
 export const appendArticles = (articles) => {
+  $('#latest-headlines').html('');
+
   let articlesFrag = document.createDocumentFragment();
 
   articles.forEach(article => {
@@ -179,7 +182,6 @@ const addArticle = (article) => {
 
 if ('serviceWorker' in navigator && 'SyncManager' in window && 'Notification' in window) {
   window.addEventListener('load', () => {
-    fetchLatestHeadlines();
     navigator.serviceWorker.register('./service-worker.js')
       .then(registration => navigator.serviceWorker.ready)
       .then(registration => {
@@ -188,7 +190,7 @@ if ('serviceWorker' in navigator && 'SyncManager' in window && 'Notification' in
           let headline = $('#headline-input').val();
           let byline = $('#byline-input').val();
 
-          addArticle({ headline, byline, id: new Date() });
+          addArticle({ headline, byline, id: 7, datestamp: new Date() , tags: ['test', 'this', 'out']});
           // sendMessage({ 
           //   type: 'add-article',
           //   article: { headline, byline, id: new Date() }
@@ -199,6 +201,7 @@ if ('serviceWorker' in navigator && 'SyncManager' in window && 'Notification' in
         // registration failed :(
         console.log(`ServiceWorker registration failed: ${err}`);
       });
+    fetchLatestHeadlines();
   });
 }
 
