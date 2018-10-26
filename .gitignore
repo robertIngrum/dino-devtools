@@ -1,7 +1,7 @@
 # Generated Files
 public/assets/css/*
-public/bundle.js*
-public/bundle.js.map
+public/bundle*.js*
+public/bundle*.js.map
 
 # Logs
 logs
